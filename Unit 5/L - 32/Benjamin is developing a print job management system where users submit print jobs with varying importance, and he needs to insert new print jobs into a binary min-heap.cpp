@@ -5,66 +5,55 @@
 
 
 
+
+
+
 #include <iostream>
-#include <vector>
+using namespace std;
 
-class MinHeap {
-private:
-    std::vector<int> heap;
-    int size;
-
-    int parent(int i) { return (i - 1) / 2; }
-    int left(int i) { return 2 * i + 1; }
-    int right(int i) { return 2 * i + 2; }
-
-    void bubbleUp(int i) {
-        while (i != 0 && heap[parent(i)] > heap[i]) {
-            std::swap(heap[i], heap[parent(i)]);
-            i = parent(i);
-        }
-    }
-
-public:
-    MinHeap() : size(0) {}
-
-    void insert(int val) {
-        if (size == heap.size()) {
-            heap.push_back(val);
-        } else {
-            heap[size] = val;
-        }
-        bubbleUp(size);
-        size++;
-    }
-
-    int getSize() const {
-        return size;
-    }
-
-    void printHeap() {
-        for (int i = 0; i < size; i++) {
-            std::cout << heap[i];
-            if (i < size - 1) {
-                std::cout << " ";
-            }
-        }
-    }
+struct PrintJob {
+    int importance;
 };
 
-int main() {
-    const int maxHeapSize = 100;
-    MinHeap minHeap;
-    int val;
+void swap(struct PrintJob* a, struct PrintJob* b) {
+    struct PrintJob temp = *a;
+    *a = *b;
+    *b = temp;
+}
 
-    while (std::cin >> val) {
-        if (minHeap.getSize() < maxHeapSize) {
-            minHeap.insert(val);
-        } else {
-            std::cerr << "Heap size exceeded" << std::endl;
-            return 1;
+void insertPrintJob(struct PrintJob heap[], int* heapSize, struct PrintJob newPrintJob) {
+    (*heapSize)++;
+
+    int i = (*heapSize) - 1;
+    heap[i] = newPrintJob;
+
+    while (i > 0 && heap[(i - 1) / 2].importance > heap[i].importance) {
+        swap(&heap[i], &heap[(i - 1) / 2]);
+        i = (i - 1) / 2;
+    }
+}
+
+void printHeap(struct PrintJob heap[], int heapSize) {
+    for (int i = 0; i < heapSize; i++) {
+        cout << heap[i].importance << " ";
+    }
+    cout << endl;
+}
+
+int main() {
+    struct PrintJob binaryHeap[100];
+    int heapSize = 0;
+
+    while (1) {
+        struct PrintJob newPrintJob;
+        if (!(cin >> newPrintJob.importance)) {
+            break;
         }
+
+        insertPrintJob(binaryHeap, &heapSize, newPrintJob);
     }
 
-    minHeap.printHeap();
+    printHeap(binaryHeap, heapSize);
+
     return 0;
 }
