@@ -43,7 +43,7 @@ void printHeap(Location heap[], int heapSize) {
 }
 
 int main() {
-    Location minHeap[100]; /
+    Location minHeap[100]; 
     int heapSize = 0;
 
     while (true) {
