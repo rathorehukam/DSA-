@@ -6,76 +6,86 @@
 
 
 
-
 #include <iostream>
+#include <vector>
+
 using namespace std;
 
-struct Node {
-    int data;
-    Node* left;
-    Node* right;
+struct TreeNode {
+    int val;
+    TreeNode* left;
+    TreeNode* right;
+    TreeNode(int x) : val(x), left(NULL), right(NULL) {}
 };
 
-Node* insert(Node* root, int value) {
+TreeNode* insert(TreeNode* root, int val) {
     if (root == NULL) {
-        return (Node*)malloc(sizeof(Node)); 
+        return new TreeNode(val);
     }
-    if (value < root->data) {
-        root->left = insert(root->left, value);
-    } else {
-        root->right = insert(root->right, value);
+    if (val < root->val) {
+        root->left = insert(root->left, val);
+    } else if (val > root->val) {
+        root->right = insert(root->right, val);
     }
     return root;
 }
 
-Node* deleteEvenNodes(Node* root) {
+TreeNode* deleteEvenNodes(TreeNode* root) {
     if (root == NULL) {
         return NULL;
     }
     root->left = deleteEvenNodes(root->left);
     root->right = deleteEvenNodes(root->right);
-    if (root->data % 2 == 0) {
+    if (root->val % 2 == 0) {
         if (root->left == NULL) {
-            Node* temp = root->right;
-            free(root); 
-            return temp;
+            return root->right;
+        } else if (root->right == NULL) {
+            return root->left;
+        } else {
+            TreeNode* minNode = root->right;
+            while (minNode->left != NULL) {
+                minNode = minNode->left;
+            }
+            root->val = minNode->val;
+root->right = deleteEvenNodes(root->right);
         }
-        if (root->right == NULL) {
-            Node* temp = root->left;
-            free(root); 
-            return temp;
-        }
-        Node* successor = root->right;
-        while (successor->left != NULL) {
-            successor = successor->left;
-        }
-        root->data = successor->data;
-        root->right = deleteEvenNodes(root->right);
     }
     return root;
 }
 
-void printBST(Node* root) {
+void inOrder(TreeNode* root, vector<int>& result) {
     if (root == NULL) {
         return;
     }
-    printBST(root->left);
-    cout << root->data << " ";
-    printBST(root->right);
+    inOrder(root->left, result);
+    result.push_back(root->val);
+    inOrder(root->right, result);
 }
 
 int main() {
-    int n;
-    cin >> n;
-    Node* root = nullptr;
+    int N;
+    cin >> N;
 
-    for (int i = 0; i < n; i++) {
-        int data;
-        cin >> data;
-        root = insert(root, data);
+    TreeNode* root = NULL;
+
+    for (int i = 0; i < N; i++) {
+        int val;
+        cin >> val;
+        root = insert(root, val);
     }
 
     root = deleteEvenNodes(root);
-    printBST(root);
+
+    vector<int> result;
+    inOrder(root, result);
+
+    for (int i = 0; i < result.size(); i++) {
+        cout << result[i];
+        if (i < result.size() - 1) {
+            cout << " ";
+        }
+    }
+    cout << endl;
+
     return 0;
 }
